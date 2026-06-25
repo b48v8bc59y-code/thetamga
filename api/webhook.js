@@ -27,7 +27,7 @@ export default async function handler(req, res) {
   const shopifyToken = process.env.SHOPIFY_ACCESS_TOKEN;
 
   const response = await fetch(
-    `https://thetamga.myshopify.com/admin/api/2024-01/orders/${order_id}/transactions.json`,
+    https://thetamga.myshopify.com/admin/api/2024-01/orders/${order_id}/transactions.json,
     {
       method: 'POST',
       headers: {
