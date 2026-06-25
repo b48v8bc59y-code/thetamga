@@ -18,13 +18,15 @@ module.exports = async function handler(req, res) {
       '';
 
     console.log('PHONE:', phone);
+    console.log('AMOUNT:', amount);
+    console.log('API KEY EXISTS:', !!process.env.APIPAY_API_KEY);
 
     const response = await fetch(
       'https://apipay.kz/api/v1/invoices',
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${process.env.APIPAY_API_KEY}`,
+          'X-API-Key': process.env.APIPAY_API_KEY,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
