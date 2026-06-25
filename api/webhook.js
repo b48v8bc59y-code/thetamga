@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -27,7 +27,7 @@ export default async function handler(req, res) {
   const shopifyToken = process.env.SHOPIFY_ACCESS_TOKEN;
 
   const response = await fetch(
-    https://thetamga.myshopify.com/admin/api/2024-01/orders/${order_id}/transactions.json,
+    `https://thetamga.myshopify.com/admin/api/2024-01/orders/${order_id}/transactions.json`,
     {
       method: 'POST',
       headers: {
@@ -47,3 +47,4 @@ export default async function handler(req, res) {
   const data = await response.json();
   return res.status(200).json({ ok: true, data });
 }
+
