@@ -11,15 +11,23 @@ module.exports = async function handler(req, res) {
     const orderId = order.id;
     const amount = Number(order.total_price);
 
-    const phone =
+    const rawPhone =
       order.shipping_address?.phone ||
       order.billing_address?.phone ||
       order.customer?.default_address?.phone ||
       '';
 
-    console.log('PHONE:', phone);
+    const phone = rawPhone
+      .replace(/\D/g, '')
+      .replace(/^7/, '8');
+
+    console.log('RAW PHONE:', rawPhone);
+    console.log('FORMATTED PHONE:', phone);
     console.log('AMOUNT:', amount);
-    console.log('API KEY EXISTS:', !!process.env.APIPAY_API_KEY);
+    console.log(
+      'API KEY EXISTS:',
+      !!process.env.APIPAY_API_KEY
+    );
 
     const response = await fetch(
       'https://apipay.kz/api/v1/invoices',
@@ -28,6 +36,7 @@ module.exports = async function handler(req, res) {
         headers: {
           'X-API-Key': process.env.APIPAY_API_KEY,
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
         body: JSON.stringify({
           amount: amount,
@@ -40,12 +49,17 @@ module.exports = async function handler(req, res) {
     const data = await response.json();
 
     console.log('APIPAY STATUS:', response.status);
-    console.log('APIPAY RESPONSE:', JSON.stringify(data));
+    console.log(
+      'APIPAY RESPONSE:',
+      JSON.stringify(data, null, 2)
+    );
 
     return res.status(200).json({
       success: true,
-      phone,
+      orderId,
       amount,
+      phone,
+      apipayStatus: response.status,
       apipay: data,
     });
   } catch (error) {
