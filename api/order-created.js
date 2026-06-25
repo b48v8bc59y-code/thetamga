@@ -8,6 +8,18 @@ module.exports = async function handler(req, res) {
 
     console.log('ORDER:', JSON.stringify(order, null, 2));
 
+    const gateways = order.payment_gateway_names || [];
+
+    if (!gateways.includes('Kaspi Pay')) {
+      console.log('SKIPPED - NOT KASPI PAY');
+
+      return res.status(200).json({
+        success: true,
+        skipped: true,
+        reason: 'Not Kaspi Pay',
+      });
+    }
+
     const orderId = order.id;
     const amount = Number(order.total_price);
 
@@ -24,10 +36,7 @@ module.exports = async function handler(req, res) {
     console.log('RAW PHONE:', rawPhone);
     console.log('FORMATTED PHONE:', phone);
     console.log('AMOUNT:', amount);
-    console.log(
-      'API KEY EXISTS:',
-      !!process.env.APIPAY_API_KEY
-    );
+    console.log('API KEY EXISTS:', !!process.env.APIPAY_API_KEY);
 
     const response = await fetch(
       'https://apipay.kz/api/v1/invoices',
@@ -49,10 +58,7 @@ module.exports = async function handler(req, res) {
     const data = await response.json();
 
     console.log('APIPAY STATUS:', response.status);
-    console.log(
-      'APIPAY RESPONSE:',
-      JSON.stringify(data, null, 2)
-    );
+    console.log('APIPAY RESPONSE:', JSON.stringify(data, null, 2));
 
     return res.status(200).json({
       success: true,
@@ -62,6 +68,7 @@ module.exports = async function handler(req, res) {
       apipayStatus: response.status,
       apipay: data,
     });
+
   } catch (error) {
     console.error('ERROR:', error);
 
